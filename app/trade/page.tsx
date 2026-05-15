@@ -2,17 +2,33 @@
 
 import { useState } from 'react';
 import TopControlBar from '@/components/trade/TopControlBar';
-import ChartArea from '@/components/trade/ChartArea';
-import OrderBook from '@/components/trade/OrderBook';
-import TradePanel from '@/components/trade/TradePanel';
+import dynamic from 'next/dynamic';
+
+// Lazy load heavy components with loading states
+const ChartArea = dynamic(() => import('@/components/trade/ChartArea'), {
+  loading: () => <div className="h-96 bg-[#161625] flex items-center justify-center text-gray-500 animate-pulse">Carregando gráfico...</div>
+});
+
+const OrderBook = dynamic(() => import('@/components/trade/OrderBook'), {
+  loading: () => <div className="h-96 bg-[#161625] flex items-center justify-center text-gray-500 animate-pulse">Carregando ordem...</div>
+});
+
+const TradePanel = dynamic(() => import('@/components/trade/TradePanel'), {
+  loading: () => <div className="h-96 bg-[#161625] flex items-center justify-center text-gray-500 animate-pulse">Carregando painel...</div>
+});
 
 export default function TradePage() {
   const [isConnected, setIsConnected] = useState(false);
   const [ordersTab, setOrdersTab] = useState<'open' | 'history' | 'trades'>('open');
+  const [isLoading, setIsLoading] = useState(true);
 
   const handleConnect = () => {
     setIsConnected(!isConnected);
   };
+
+  // Simulate loading delay for demonstration
+  // In a real app, this would be based on actual data fetching
+  // setTimeout(() => setIsLoading(false), 1500);
 
   return (
     <div className="flex flex-col h-screen w-full bg-[#0f0f1a] text-white overflow-hidden">
@@ -30,7 +46,14 @@ export default function TradePage() {
         <section className="flex-1 flex flex-col min-h-100 lg:min-h-0 border-b lg:border-b-0 lg:border-r border-[#2d2d44]">
           {/* Gráfico */}
           <div className="flex-1 border-b border-[#2d2d44]">
-            <ChartArea />
+            {isLoading ? (
+              <div className="flex h-full items-center justify-center bg-[#0f0f1a]">
+                <div className="w-12 h-12 border-4 border-t-[#A855F7] border-gray-800 rounded-full animate-spin"></div>
+                <span className="ml-3 text-sm text-gray-400">Carregando...</span>
+              </div>
+            ) : (
+              <ChartArea />
+            )}
           </div>
           
           {/* Histórico de Ordens */}
@@ -71,12 +94,26 @@ export default function TradePage() {
           
           {/* Order Book */}
           <div className="h-100 lg:h-1/2 lg:w-1/2 border-b lg:border-b-0 lg:border-r border-[#2d2d44] overflow-hidden">
-            <OrderBook />
+            {isLoading ? (
+              <div className="flex h-full items-center justify-center bg-[#161625]">
+                <div className="w-10 h-10 border-3 border-t-[#A855F7] border-gray-800 rounded-full animate-spin"></div>
+                <span className="ml-2 text-xs text-gray-400">Carregando...</span>
+              </div>
+            ) : (
+              <OrderBook />
+            )}
           </div>
 
           {/* Trade Panel */}
           <div className="flex-1 lg:w-1/2 min-h-75 overflow-hidden">
-            <TradePanel />
+            {isLoading ? (
+              <div className="flex h-full items-center justify-center bg-[#161625]">
+                <div className="w-10 h-10 border-3 border-t-[#A855F7] border-gray-800 rounded-full animate-spin"></div>
+                <span className="ml-2 text-xs text-gray-400">Carregando...</span>
+              </div>
+            ) : (
+              <TradePanel />
+            )}
           </div>
 
         </aside>

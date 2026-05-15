@@ -4,50 +4,88 @@ import { useEffect, useRef } from 'react';
 
 export default function ChartArea() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const animationFrameRef = useRef<number | null>(null);
 
   useEffect(() => {
     if (!containerRef.current) return;
     const el = containerRef.current;
-    el.innerHTML = ''; 
     
-    const canvas = document.createElement('canvas');
-    canvas.width = el.clientWidth;
-    canvas.height = el.clientHeight;
-    const ctx = canvas.getContext('2d');
-    
-    if(ctx) {
-        ctx.fillStyle = '#0f0f1a';
-        ctx.fillRect(0,0, canvas.width, canvas.height);
-        
-        ctx.strokeStyle = '#1f1f33';
-        ctx.lineWidth = 1;
-        
-        for(let i=0; i<canvas.width; i+=50) {
-            ctx.beginPath(); ctx.moveTo(i,0); ctx.lineTo(i, canvas.height); ctx.stroke();
-        }
-        for(let i=0; i<canvas.height; i+=50) {
-            ctx.beginPath(); ctx.moveTo(0,i); ctx.lineTo(canvas.width, i); ctx.stroke();
-        }
+    // Clear canvas on unmount
+    return () => {
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+      el.innerHTML = '';
+    };
+  }, []);
 
-        ctx.strokeStyle = '#A855F7';
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        let y = canvas.height / 2;
-        for(let x=0; x<canvas.width; x+=5) {
-            y += (Math.random() - 0.5) * 10;
-            if(x===0) ctx.moveTo(x,y);
-            else ctx.lineTo(x,y);
-        }
-        ctx.stroke();
-        
-        ctx.fillStyle = '#2d2d44';
-        ctx.font = 'bold 40px Inter';
-        ctx.textAlign = 'center';
-        ctx.fillText('JDex Chart View', canvas.width/2, canvas.height/2);
-    }
+  useEffect(() => {
+    if (!containerRef.current) return;
     
-    el.appendChild(canvas);
+    const drawChart = () => {
+      const el = containerRef.current;
+      if (!el) return;
+      
+      el.innerHTML = ''; 
+      
+      const canvas = document.createElement('canvas');
+      canvas.width = el.clientWidth;
+      canvas.height = el.clientHeight;
+      const ctx = canvas.getContext('2d');
+      
+      if(ctx) {
+          ctx.fillStyle = '#0f0f1a';
+          ctx.fillRect(0,0, canvas.width, canvas.height);
+          
+          ctx.strokeStyle = '#1f1f33';
+          ctx.lineWidth = 1;
+          
+          for(let i=0; i<canvas.width; i+=50) {
+              ctx.beginPath(); ctx.moveTo(i,0); ctx.lineTo(i, canvas.height); ctx.stroke();
+          }
+          for(let i=0; i<canvas.height; i+=50) {
+              ctx.beginPath(); ctx.moveTo(0,i); ctx.lineTo(canvas.width, i); ctx.stroke();
+          }
 
+          ctx.strokeStyle = '#A855F7';
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          let y = canvas.height / 2;
+          for(let x=0; x<canvas.width; x+=5) {
+              y += (Math.random() - 0.5) * 10;
+              if(x===0) ctx.moveTo(x,y);
+              else ctx.lineTo(x,y);
+          }
+          ctx.stroke();
+          
+          ctx.fillStyle = '#2d2d44';
+          ctx.font = 'bold 40px Inter';
+          ctx.textAlign = 'center';
+          ctx.fillText('JDex Chart View', canvas.width/2, canvas.height/2);
+      }
+      
+      el.appendChild(canvas);
+    };
+
+    // Initial draw
+    drawChart();
+    
+    // Handle resize
+    const handleResize = () => {
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+      animationFrameRef.current = requestAnimationFrame(drawChart);
+    };
+    
+    window.addEventListener('resize', handleResize);
+    
+    return () => {
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+      window.removeEventListener('resize', handleResize);
+    };
   }, []);
 
   return (

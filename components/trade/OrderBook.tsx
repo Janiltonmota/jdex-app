@@ -1,20 +1,26 @@
 'use client';
 
-const asks = Array.from({ length: 12 }, (_, i) => ({
-  price: (2450 + i * 0.5).toFixed(2),
-  amount: (Math.random() * 2).toFixed(4),
-  total: (Math.random() * 5).toFixed(4),
-  barWidth: Math.random() * 60,
-})).reverse();
-
-const bids = Array.from({ length: 12 }, (_, i) => ({
-  price: (2449 - i * 0.5).toFixed(2),
-  amount: (Math.random() * 2).toFixed(4),
-  total: (Math.random() * 5).toFixed(4),
-  barWidth: Math.random() * 60,
-}));
+import { useMemo } from 'react';
 
 export default function OrderBook() {
+  const asks = useMemo(() => 
+    Array.from({ length: 12 }, (_, i) => ({
+      price: (2450 + i * 0.5).toFixed(2),
+      amount: (Math.random() * 2).toFixed(4),
+      total: (Math.random() * 5).toFixed(4),
+      barWidth: Math.random() * 60,
+    })).reverse(),
+  []);
+
+  const bids = useMemo(() => 
+    Array.from({ length: 12 }, (_, i) => ({
+      price: (2449 - i * 0.5).toFixed(2),
+      amount: (Math.random() * 2).toFixed(4),
+      total: (Math.random() * 5).toFixed(4),
+      barWidth: Math.random() * 60,
+    })),
+  []);
+
   return (
     <div className="flex flex-col h-full bg-[#161625] w-full lg:w-80 border-l border-[#2d2d44]">
       <div className="p-3 border-b border-[#2d2d44] font-medium text-sm text-gray-300">
