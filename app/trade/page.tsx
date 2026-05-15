@@ -20,11 +20,6 @@ const TradePanel = dynamic(() => import('@/components/trade/TradePanel'), {
 export default function TradePage() {
   const { address, isConnected } = useAccount();
   const [ordersTab, setOrdersTab] = useState<'open' | 'history' | 'trades'>('open');
-  const [isLoading, setIsLoading] = useState(true);
-
-  // Simulate loading delay for demonstration
-  // In a real app, this would be based on actual data fetching
-  // setTimeout(() => setIsLoading(false), 1500);
 
   return (
     <div className="flex flex-col h-screen w-full bg-[#0f0f1a] text-white overflow-hidden">
@@ -42,14 +37,7 @@ export default function TradePage() {
         <section className="flex-1 flex flex-col min-h-100 lg:min-h-0 border-b lg:border-b-0 lg:border-r border-[#2d2d44]">
           {/* Gráfico */}
           <div className="flex-1 border-b border-[#2d2d44]">
-            {isLoading ? (
-              <div className="flex h-full items-center justify-center bg-[#0f0f1a]">
-                <div className="w-12 h-12 border-4 border-t-[#A855F7] border-gray-800 rounded-full animate-spin"></div>
-                <span className="ml-3 text-sm text-gray-400">Carregando...</span>
-              </div>
-            ) : (
-              <ChartArea />
-            )}
+            <ChartArea />
           </div>
           
           {/* Histórico de Ordens */}
@@ -90,26 +78,12 @@ export default function TradePage() {
           
           {/* Order Book */}
           <div className="h-100 lg:h-1/2 lg:w-1/2 border-b lg:border-b-0 lg:border-r border-[#2d2d44] overflow-hidden">
-            {isLoading ? (
-              <div className="flex h-full items-center justify-center bg-[#161625]">
-                <div className="w-10 h-10 border-3 border-t-[#A855F7] border-gray-800 rounded-full animate-spin"></div>
-                <span className="ml-2 text-xs text-gray-400">Carregando...</span>
-              </div>
-            ) : (
-              <OrderBook />
-            )}
+            <OrderBook />
           </div>
 
           {/* Trade Panel */}
           <div className="flex-1 lg:w-1/2 min-h-75 overflow-hidden">
-            {isLoading ? (
-              <div className="flex h-full items-center justify-center bg-[#161625]">
-                <div className="w-10 h-10 border-3 border-t-[#A855F7] border-gray-800 rounded-full animate-spin"></div>
-                <span className="ml-2 text-xs text-gray-400">Carregando...</span>
-              </div>
-            ) : (
-              <TradePanel />
-            )}
+            <TradePanel />
           </div>
 
         </aside>

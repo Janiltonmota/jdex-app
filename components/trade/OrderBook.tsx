@@ -2,23 +2,34 @@
 
 import { useMemo } from 'react';
 
-export default function OrderBook() {
-  const asks = useMemo(() => 
-    Array.from({ length: 12 }, (_, i) => ({
-      price: (2450 + i * 0.5).toFixed(2),
-      amount: (Math.random() * 2).toFixed(4),
-      total: (Math.random() * 5).toFixed(4),
-      barWidth: Math.random() * 60,
-    })).reverse(),
-  []);
+// Function to generate deterministic mock data
+function generateDeterministicData(basePrice: number, count: number, isAsk: boolean) {
+  const data = [];
+  for (let i = 0; i < count; i++) {
+    // Create deterministic values that look varied but don't use random during render
+    const seed = i * 0.123456; // Some irrational number for variation
+    const amount = ((Math.sin(seed) + 1) * 0.5 * 1.5 + 0.5); // Between 0.5 and 2.0
+    const total = ((Math.cos(seed) + 1) * 0.5 * 4 + 1); // Between 1.0 and 5.0
+    const price = basePrice + (isAsk ? i * 0.5 : -i * 0.5);
+    
+    data.push({
+      price: price.toFixed(2),
+      amount: amount.toFixed(4),
+      total: total.toFixed(4),
+      barWidth: amount * 25, // Scale for visualization
+    });
+  }
+  return data;
+}
 
+export default function OrderBook() {
+  // Generate asks (higher prices) and bids (lower prices) deterministically
+  const asks = useMemo(() => 
+    generateDeterministicData(2450, 12, true).reverse(), 
+  []);
+  
   const bids = useMemo(() => 
-    Array.from({ length: 12 }, (_, i) => ({
-      price: (2449 - i * 0.5).toFixed(2),
-      amount: (Math.random() * 2).toFixed(4),
-      total: (Math.random() * 5).toFixed(4),
-      barWidth: Math.random() * 60,
-    })),
+    generateDeterministicData(2449, 12, false), 
   []);
 
   return (
