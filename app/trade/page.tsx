@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useAccount } from 'wagmi';
 import TopControlBar from '@/components/trade/TopControlBar';
 import dynamic from 'next/dynamic';
 
@@ -18,13 +18,9 @@ const TradePanel = dynamic(() => import('@/components/trade/TradePanel'), {
 });
 
 export default function TradePage() {
-  const [isConnected, setIsConnected] = useState(false);
+  const { address, isConnected } = useAccount();
   const [ordersTab, setOrdersTab] = useState<'open' | 'history' | 'trades'>('open');
   const [isLoading, setIsLoading] = useState(true);
-
-  const handleConnect = () => {
-    setIsConnected(!isConnected);
-  };
 
   // Simulate loading delay for demonstration
   // In a real app, this would be based on actual data fetching
@@ -35,8 +31,8 @@ export default function TradePage() {
       
       {/* Barra de Controle Superior */}
       <TopControlBar 
-        onConnectWallet={handleConnect} 
-        isConnected={isConnected} 
+        address={address}
+        isConnected={isConnected}
       />
 
       {/* Área Principal de Trading */}
@@ -118,6 +114,13 @@ export default function TradePage() {
 
         </aside>
       </main>
+      
+      {/* Warning when not connected */}
+      {!isConnected && (
+        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-red-500 text-white px-4 py-2 rounded-md text-sm">
+          Conecte sua carteira para negociação
+        </div>
+      )}
     </div>
   );
 }
